@@ -1,10 +1,9 @@
 using IntervalTrees
 using DataFrames
-#
-# The idea is that
-#   description can be anything, the idea is that
-#   it could if desired say what each column means, or
-#   describe what organism this is about, or any other key - value
+
+# FeatureTable:
+#   Description can be any metadata e.g. it could note what each column means, or
+#   describe what organism this is about, or any other key - value.
 #
 
 type FeatureTable
@@ -12,13 +11,21 @@ type FeatureTable
   dataframe::DataFrame
 end
 
-#  A Feature:  An interval, or a point, or possibly an area
+#  Feature:  An interval, point, possibly an area??
 #    represented by a single row in a dataframe - it might have a start and a stop a seqid a name and so on.
+type Feature
+   feature::DataFrame
+   function Feature(start,stop,region_id="REGION1"; args...)
+       return DataFrame(region_id=region_id,start=start,stop=stop)
+       # add in other columns
+   end
+end
 
-# For Features to make sense they have to be Features of something, this something we define as Regions.
+
+# Features are features of something, this something define as "Region".
 #
 #  A region is any range of something, probably tied to a sequence often, such as
-#  a gene (although that isn't tied necessarilly to one set of coordinates)
+#  a gene (although that isn't tied necessarily to one set of coordinates)
 #  or an entire chromosome
 #
 #  The Features type indexes Features by Region (i.e. a region_id such as chr).
@@ -27,14 +34,6 @@ end
 #
 # Features is for features that are indexed by a sequence_id
 # SF.features["seq1"] or SF.features["chr1"]
-
-type Feature
-   feature::DataFrame
-   function Feature(start,stop,region_id="REGION1"; args...)
-       return DataFrame(region_id=region_id,start=start,stop=stop)
-       # add in other columns
-   end
-end
 
 type Features
   description::Dict{ASCIIString,Any}
@@ -125,7 +124,7 @@ end
 
 # takes one set of features and adds them to an already existing
 # container of features
-function instertfeatures!( target::Features, features::Features; start_field = :start, stop_field = :stop, region_id_field = :chr )
+function insertfeatures!( target::Features, features::Features; start_field = :start, stop_field = :stop, region_id_field = :chr )
 end
 
 function add_dataframe_to_features!(target::Features, DF::DataFrame; start_field = :start, stop_field = :stop, region_id_field = :chr)
@@ -155,7 +154,7 @@ function insertintervals!( region_features_dict, region_id, start, stop, value::
     end
 end
 
-# Further thinking
+# Further thoughts
 # ----------------
 # A feature is a region of some size
 # and it could have multiple regions
