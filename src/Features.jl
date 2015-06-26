@@ -62,6 +62,13 @@ type Features
      end
      new( desc, region_features_dict )
   end
+
+  # Empty Feautures
+  function Features()
+      desc = Dict{ASCIIString,Any}()
+      region_features_dict=Dict()
+      new( desc, region_features_dict )
+  end
 end
 
 function add_dataframe_to_description(DF::DataFrame; description=Dict{ASCIIString,Any}(),region_id_field = :chr)
@@ -142,6 +149,44 @@ function insertintervals!( region_features_dict, region_id, start, stop, value::
     else
         try
            interval_tree = IntervalTree{Int32,DataFrame}()
+           if start != nothing && stop != nothing
+             interval_tree[(start,stop)] = value
+           end
+           region_features_dict[region_id]  = interval_tree
+        catch e
+           println("Exception chr: $region_id, start: $start, stop: $stop, value $value ")
+           println( join( [  "Exception, ", typeof(region_id), " ", typeof(start), " ", typeof(stop) ], "\t" ) )
+           error(e)
+        end
+    end
+end
+
+
+## --- IN PROGRESS ----##
+# A more memory efficient version of Features
+# Don't use dataframes as the value
+# Interval Tree positions should be Int32
+# See how that goes
+type FeaturesSlim
+  description::Dict{ASCIIString,Any}
+  features::Dict{Any,Any}
+  function FeaturesSlim()
+      desc = Dict{ASCIIString,Any}()
+      region_features_dict=Dict()
+      new( desc, region_features_dict )
+  end
+end
+
+function insertfeatures!(target::FeaturesSlim, region_id,start,stop,value)
+   region_features_dict = target.features
+   if haskey(region_features_dict, region_id)
+        interval_tree = region_features_dict[region_id]
+        if start != nothing && stop != nothing
+             interval_tree[(start,stop)] = value
+        end
+    else
+        try
+           interval_tree = IntervalTree{Int32,Int64}()
            if start != nothing && stop != nothing
              interval_tree[(start,stop)] = value
            end

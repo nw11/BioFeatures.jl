@@ -1,14 +1,13 @@
 module BioFeatures
 
-#SHOULD THIS WHOLE PACKAGE JUST BE CALLED BIOREGIONS
-#Region emplies a range or something, Feature could be a single point
+# Region implies a range or something, Feature could be a single point
 
 export FeatureTable
 export Features
+export FeaturesSlim
 export add_dataframe_to_features!
-
-
-# package code goes here
+export insertintervals!
+export insertfeatures!
 include(Pkg.dir("BioFeatures","src","Features.jl"))
 
 end # module
